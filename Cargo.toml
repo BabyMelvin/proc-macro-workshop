@@ -5,10 +5,27 @@ edition = "2021"
 publish = false
 
 [workspace]
+members = [
+    "examples/heapsize/heapsize_derive",
+    "examples/heapsize/heapsize",
+    "examples/heapsize/example",
+    "examples/lazy-static/lazy-static",
+    "examples/lazy-static/example",
+    "examples/trace-var/trace-var",
+    "examples/trace-var/example"
+]
 
 [[bin]]
 name = "workshop"
 path = "main.rs"
+
+[[bin]]
+name = "debug_struct"
+path = "debug/bins/debug_struct.rs"
+
+[[bin]]
+name = "fromat_args"
+path = "debug/bins/format_args.rs"
 
 [dependencies]
 bitfield = { path = "bitfield" }

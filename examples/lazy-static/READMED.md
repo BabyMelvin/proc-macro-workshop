@@ -1,0 +1,1 @@
+[lazy-static](https://github.com/dtolnay/syn/tree/master/examples/lazy-static)

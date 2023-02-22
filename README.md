@@ -1,9 +1,10 @@
 # Rust Latam: procedural macros workshop
+Latin America
 
-*This repo contains a selection of projects designed to learn to write Rust
+* This repo contains a selection of projects designed to learn to write Rust
 procedural macros &mdash; Rust code that generates Rust code.*
 
-*Each of these projects is drawn closely from a compelling real use case. Out of
+* Each of these projects is drawn closely from a compelling real use case. Out of
 the 5 projects here, 3 are macros that I have personally implemented in
 industrial codebases for work, and the other 2 exist as libraries on crates.io
 by other authors.*
@@ -12,18 +13,20 @@ by other authors.*
 
 ## Contents
 
-- [**Suggested prerequisites**](#suggested-prerequisites)
-- [**Projects**](#projects) — Introduction to each of the projects
-  - [**Derive macro:** `derive(Builder)`](#derive-macro-derivebuilder)
-  - [**Derive macro:** `derive(CustomDebug)`](#derive-macro-derivecustomdebug)
-  - [**Function-like macro:** `seq!`](#function-like-macro-seq)
-  - [**Attribute macro:** `#[sorted]`](#attribute-macro-sorted)
-  - [**Attribute macro:** `#[bitfield]`](#attribute-macro-bitfield)
-  - [**Project recommendations**](#project-recommendations) — What to work on
-    depending on your interests
-- [**Test harness**](#test-harness) — Explanation of how testing is set up
-- [**Workflow**](#workflow) — Recommended way to work through the workshop
-- [**Debugging tips**](#debugging-tips)
+- [Rust Latam: procedural macros workshop](#rust-latam-procedural-macros-workshop)
+  - [Contents](#contents)
+  - [Suggested prerequisites](#suggested-prerequisites)
+  - [Projects](#projects)
+    - [Derive macro: `derive(Builder)`](#derive-macro-derivebuilder)
+    - [Derive macro: `derive(CustomDebug)`](#derive-macro-derivecustomdebug)
+    - [Function-like macro: `seq!`](#function-like-macro-seq)
+    - [Attribute macro: `#[sorted]`](#attribute-macro-sorted)
+    - [Attribute macro: `#[bitfield]`](#attribute-macro-bitfield)
+    - [Project recommendations](#project-recommendations)
+  - [Test harness](#test-harness)
+  - [Workflow](#workflow)
+  - [Debugging tips](#debugging-tips)
+    - [License](#license)
 
 <br>
 
@@ -36,7 +39,7 @@ Be aware that the content of the workshop and the explanations in this repo will
 assume a working understanding of structs, enums, traits, trait impls, generic
 parameters, and trait bounds. You are welcome to dive into the workshop with any
 level of experience with Rust, but you may find that these basics are far easier
-to learn for the first time outside of the context of macros.
+to learn for the first time outside of the context of macros(不在宏的语义中，第一次学习基础会更容易).
 
 <br>
 
