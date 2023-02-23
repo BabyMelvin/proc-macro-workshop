@@ -23,6 +23,8 @@ struct Args {
 
 impl Parse for Args {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
+        // Token根据给定的token转为 Rust type 类型的名称， [,] => Comma
+        // Punctuated标点符号， 通过","分割的标点符号的Ident流  Punctuated::<Ident, Comma>
         let vars = Punctuated::<Ident, Token![,]>::parse_terminated(input)?;
         Ok(Args {
             vars: vars.into_iter().collect(),
@@ -91,13 +93,14 @@ impl Args {
             Pat::Ident(ref p) => &p.ident,
             _ => unreachable!(),
         };
+        // 这个带推断结果类型
         parse_quote! {
             let #pat = {
                 #[allow(unused_mut)]
                 let #pat = #init;
                 println!(concat!(stringify!(#ident), " = {:?}"), #ident);
                 #ident
-            }
+            };
         }
     }
 }
@@ -173,6 +176,9 @@ pub fn trace_var(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut args = parse_macro_input!(args as Args);
 
     // Use a syntax tree traversal to transform the function body.
+    // 用语法树比遍历去转换函数体, 这里args要impl Fold trait，然后调用fold_item_fn
+    // fold_item_fn 中，因为Stmt express是包含在item fn中，也就是会调用到fold_stmt和fold_expr
+    // 然后将这个转换过的ItemFn作为返回值
     let output = args.fold_item_fn(input);
 
     // Hand the resulting function body back to the compiler
