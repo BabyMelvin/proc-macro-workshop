@@ -9,7 +9,7 @@
 //     }
 //
 // At this point the test should pass because it isn't doing anything with the
-// builder yet, so `()` as the builder type is as good as any other.
+// builder yet, so `()` as the builder type is as good as any other(`()`可作为任何参数使用).
 //
 // Before moving on, have the macro also generate:
 //

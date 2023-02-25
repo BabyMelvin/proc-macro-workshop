@@ -1,0 +1,17 @@
+[package]
+name = "derive-builder"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1"
+syn = { version = "1.0.101", features = [
+    "extra-traits",
+    "full",
+] }
+proc-macro2 = "1"
