@@ -52,10 +52,10 @@ introduction here.
 
 ### Derive macro: `derive(Builder)`
 
-This macro generates the boilerplate code involved in implementing the [builder
-pattern] in Rust. Builders are a mechanism for instantiating structs, especially
+This macro generates the boilerplate(样板) code involved in implementing the [builder
+pattern] in Rust. Builders are a mechanism for instantiating（实例化） structs, especially
 structs with many fields, and especially if many of those fields are optional or
-the set of fields may need to grow backward compatibly over time.
+the set of fields may need to grow backward compatibly over time（随时间向后兼容）.
 
 [builder pattern]: https://en.wikipedia.org/wiki/Builder_pattern
 
@@ -65,6 +65,9 @@ project I would recommend following the example of the standard library's
 [`std::process::Command`] builder in which the setter methods each receive and
 return `&mut self` to allow chained method calls.
 
+`executable`的setter方法`executable()`
+（setter方法来接收，并返回&mut self类型）
+
 [`std::process::Command`]: https://doc.rust-lang.org/std/process/struct.Command.html
 
 Callers will invoke the macro as follows.
@@ -72,6 +75,7 @@ Callers will invoke the macro as follows.
 ```rust
 use derive_builder::Builder;
 
+// 这个通过Builder 为Command结构体 derive了很多setter方法
 #[derive(Builder)]
 pub struct Command {
     executable: String,
@@ -96,7 +100,7 @@ This project covers:
 
 - traversing syntax trees;
 - constructing output source code;
-- processing helper attributes to customize the generated code.
+- processing helper attributes to customize the generated code（属性的增加，自定义fields对应的方法）.
 
 *Project skeleton is located under the <kbd>builder</kbd> directory.*
 

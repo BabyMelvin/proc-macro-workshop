@@ -2,9 +2,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::Ident;
 use quote::{quote, quote_spanned};
-use syn::{parse::Parse, parse_macro_input,
-    spanned::Spanned, Expr,
-    Token, Type, Visibility};
+use syn::{parse::Parse, parse_macro_input, spanned::Spanned, Expr, Token, Type, Visibility};
 
 /// Parses the following syntax, which aligns with the input of the real
 /// `lazy_static` crate.

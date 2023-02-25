@@ -12,7 +12,8 @@ members = [
     "examples/lazy-static/lazy-static",
     "examples/lazy-static/example",
     "examples/trace-var/trace-var",
-    "examples/trace-var/example"
+    "examples/trace-var/example",
+    "examples/dump-syntax"
 ]
 
 [[bin]]
