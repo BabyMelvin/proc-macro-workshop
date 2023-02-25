@@ -7,7 +7,7 @@ use syn::{
     NestedMeta, Path, PathArguments, PathSegment, Type, TypePath,
 };
 
-#[proc_macro_derive(Builder)]
+#[proc_macro_derive(Builder, attributes(builder))]
 pub fn my_builder(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     match drive_builder(input) {

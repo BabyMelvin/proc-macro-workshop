@@ -1,0 +1,16 @@
+[package]
+name = "derive-debug"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[dependencies]
+quote = "1"
+# syn = "1"
+syn = {version = "1", features = ["extra-traits"]}
+proc-macro2 = "1"
+
+[lib]
+proc-macro = true
