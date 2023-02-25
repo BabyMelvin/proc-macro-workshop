@@ -3,8 +3,8 @@ use proc_macro2::Ident;
 use quote::{format_ident, quote};
 use syn::{
     parse_macro_input, spanned::Spanned, AngleBracketedGenericArguments, Data, DataStruct,
-    DeriveInput, Error, Fields, FieldsNamed, GenericArgument, Path, PathArguments, PathSegment,
-    Type, TypePath,
+    DeriveInput, Error, Fields, FieldsNamed, GenericArgument, Meta, MetaList, MetaNameValue,
+    NestedMeta, Path, PathArguments, PathSegment, Type, TypePath,
 };
 
 #[proc_macro_derive(Builder)]
@@ -35,18 +35,41 @@ fn drive_builder(input: DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
         });
         let instance_builder = fields.clone().map(__new);
 
-        // 06
-        let fields_setter_method = fields.clone().map(|(i, t)| {
-            impl_fn(&vis, i, t)
-        });
+        let mut each_names = Vec::with_capacity(named.len());
+        for field in named.iter() {
+            if let Some(attr) = field.attrs.first() {
+                each_names.push(__each_attr(attr)?)
+            } else {
+                each_names.push(None)
+            }
+        }
 
+        let (more, impl_fns): (Vec<_>, Vec<_>) = fields
+            .clone()
+            .zip(each_names)
+            .map(|((ident, ty), each_name)| match each_name {
+                Some(name) => (&name != ident, impl_fn(&vis, ident, ty, Some(&name))),
+                None => (false, impl_fn(&vis, ident, ty, None)),
+            })
+            .unzip();
+
+        #[rustfmt::skip]
+        let impl_fns_more = fields.zip(more)
+        .filter_map(|((ident, ty), m)|{
+                if m {
+                    Some(impl_fn(&vis, ident, ty, None))
+                } else {
+                    None
+                }
+        });
         Ok(quote! {
             #vis struct #builder_name {
                 #(#builder_fields),*
             }
 
             impl #builder_name {
-                #(#fields_setter_method)*
+                #(#impl_fns)*
+                #(#impl_fns_more)*
 
                 #vis fn build(&mut self) -> ::core::result::Result<#input_name, std::boxed::Box<dyn ::std::error::Error>> {
                     Ok(#input_name {
@@ -127,7 +150,55 @@ fn __new((i, mut t): (&Ident, &Type)) -> proc_macro2::TokenStream {
     }
 }
 
-fn impl_fn(vis: &syn::Visibility, ident: &Ident, mut ty: &Type) -> proc_macro2::TokenStream {
-
+fn impl_fn(
+    vis: &syn::Visibility,
+    ident: &Ident,
+    mut ty: &Type,
+    each_name: Option<&Ident>,
+) -> proc_macro2::TokenStream {
+    let vec_t = each_name.is_some();
+    match check(&mut ty, vec_t) {
+        CheckFieldType::Option => quote! {
+            #vis fn #ident (&mut self, #ident : #ty) -> &mut Self {
+                self.#ident = ::core::option::Option::Some(::core::option::Option::Some(#ident));
+                self
+            }
+        },
+        CheckFieldType::Vec if vec_t => {
+            let each_name = each_name.expect("failed to get `each` name");
+            quote! {
+                #vis fn #each_name (&mut self, #each_name: #ty) -> &mut Self {
+                    self.#ident.as_mut().map(|v|v.push(#each_name));
+                    self
+                }
+            }
+        }
+        _ => quote! {
+            #vis fn #ident (&mut self, #ident: #ty) -> &mut Self {
+                self.#ident = ::core::option::Option::Some(#ident);
+                self
+            }
+        },
+    }
 }
+
+fn __each_attr(attr: &syn::Attribute) -> syn::Result<Option<Ident>> {
+    let meta = attr.parse_meta()?;
+    match &meta {
+        syn::Meta::List(MetaList { path, nested, .. }) if path.is_ident("builder") => {
+            if let Some(NestedMeta::Meta(Meta::NameValue(MetaNameValue { lit, path, .. }))) =
+                nested.first()
+            {
+                match lit {
+                    syn::Lit::Str(s) if path.is_ident("each") => {
+                        Ok(Some(format_ident!("{}", s.value())))
+                    }
+                    _ => Err(Error::new(meta.span(), "expected `builder(each = \"...\"`")),
+                }
+            } else {
+                Err(Error::new(meta.span(), "expected `builder(each = \"...\"`"))
+            }
+        }
+        _ => Ok(None),
+    }
 }
