@@ -1,15 +1,10 @@
-use std::collections::HashSet;
-
 use proc_macro::TokenStream;
 
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-mod bound;
-mod generics;
-
 use syn::{
-    parse_macro_input, parse_quote, spanned::Spanned, token::Struct, Data, DataStruct, DeriveInput,
-    Error, Field, Fields, FieldsNamed, Lit, LitStr, Meta, MetaNameValue, Result,
+    parse_macro_input, spanned::Spanned, token::Struct, Data, DataStruct, DeriveInput, Error,
+    Field, Fields, FieldsNamed, Lit, LitStr, Meta, MetaNameValue, Result,
 };
 
 #[proc_macro_derive(CustomDebug, attributes(debug))]
@@ -38,30 +33,8 @@ fn derive_builder(mut input: DeriveInput) -> Result<TokenStream2> {
             .map(|(i, a)| attr_debug(a, i))
             .collect::<Result<Vec<_>>>()?;
 
-        let mut associated = HashSet::with_capacity(8);
-        let generics = &mut input.generics;
-        let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
-        let mut opt = bound::struct_attr(&input.attrs);
-        let (mut bound_where_caluse, bound_generics) = opt.unwrap_or_default();
-        let closure = |g: &mut syn::TypeParam| {
-            generics::add_debug(
-                g,
-                named.iter().map(|f| &f.ty),
-                &mut associated,
-                &bound_generics,
-            );
-        };
-        generics.type_params_mut().for_each(closure);
-        let mut where_clause = where_clause
-            .clone()
-            .unwrap_or_else(|| parse_quote! { where });
-        let convert =
-            |ty: &syn::Type| -> syn::WherePredicate { parse_quote!(#ty: ::std::fmt::Debug) };
-        bound_where_caluse.extend(associated.into_iter().map(convert));
-        where_clause.predicates.extend(bound_where_caluse);
-
         let expand = quote! {
-            impl #impl_generics ::std::fmt::Debug for #input_name #ty_generics #where_clause {
+            impl ::std::fmt::Debug for #input_name {
                 fn fmt(&self, f: &mut::std::fmt::Formatter) -> ::std::result::Result<(), ::std::fmt::Error> {
                     f.debug_struct(#input_name_str)
                     #(
